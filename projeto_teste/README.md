@@ -80,7 +80,7 @@ Não há resultados completos de EDA devido à interrupção do código, mas o m
 1. Faça o clone do repositório.
 
     ```bash
-    git clone git@github.com:exemplohashtag/projeto_teste.git
+    git clone git@github.com:Lgleidson/projeto_ds_diabetes.git
     ```
 
 2. Crie um ambiente virtual para o seu projeto utilizando o `conda`.
