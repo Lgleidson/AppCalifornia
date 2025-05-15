@@ -1,11 +1,14 @@
 import geopandas as gpd
 import numpy as np
+import os
 import pandas as pd
 import pydeck as pdk
+import sys
 import streamlit as st
 import shapely
-import sys
-import os
+from shapely.geometry import orient  # adicione este import no topo
+
+geometry = orient(geometry, sign=1.0)
 
 from joblib import load
 
