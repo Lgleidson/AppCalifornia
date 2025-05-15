@@ -1,4 +1,4 @@
- name: machlearhousing # Nome do seu ambiente
+name: machlearhousing # Nome do seu ambiente
 channels:
   - conda-forge # Canal principal
   - defaults # Canal padrão do conda
@@ -212,7 +212,7 @@ dependencies:
   - sqlite=3.49.1=h2466b09_2
   - stack_data=0.6.3=pyhd8ed1ab_1
   - statsmodels=0.14.4=py312h1a27103_0
-  - streamlit=1.37.1=pypi_0
+  - streamlit=1.45.1=pypi_0 # Certifique-se de que a versão corresponde à instalada
   - tbb=2021.13.0=h62715c5_1
   - tenacity=8.5.0=pypi_0
   - threadpoolctl=3.6.0=pyhecae5ae_0
@@ -245,4 +245,5 @@ dependencies:
   - zstandard=0.23.0=py312h4389bb4_2
   - zstd=1.5.7=hbeecb71_2
 prefix: D:\AmbientesVirtuais\machlearhousing
+
 
