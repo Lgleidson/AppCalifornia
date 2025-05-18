@@ -31,7 +31,7 @@ rich==13.9.4
 scikit-learn==1.5.1
 scipy==1.15.2
 seaborn==0.13.2
-shapely==2.0.4
+shapely>=2.1.0
 six==1.17.0
 statsmodels==0.14.4
 streamlit==1.45.1
@@ -42,3 +42,4 @@ typing_extensions==4.13.2
 urllib3==2.4.0
 watchdog==4.0.2
 xyzservices==2025.4.0
+
