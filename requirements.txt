@@ -14,7 +14,7 @@ joblib==1.5.0
 jsonschema==4.23.0
 matplotlib==3.9.2
 mapclassify==2.8.1
-numpy==2.1.0
+numpy==1.26.4  # Alterado de 2.1.0 para 1.26.4 para compatibilidade com geopandas 0.14.3
 packaging==24.2
 pandas==2.2.2
 pillow==10.4.0
@@ -38,8 +38,8 @@ streamlit==1.45.1
 tenacity==8.5.0
 toml==0.10.2
 tornado==6.4.2
-typing_extensions==4.13.2
-urllib3==2.4.0
-watchdog==4.0.2
-xyzservices==2025.4.0
+typing_extensions==4.12.0
+urllib3==2.2.1
+webencodings==0.5.1
+xyzservices==2023.10.1
 
