@@ -6,22 +6,21 @@ import pydeck as pdk
 import sys
 import streamlit as st
 import shapely
-from shapely.geometry import orient  # adicione este import no topo
+from shapely.geometry import Polygon
+from shapely.geometry.polygon import orient  # Correct import for shapely>=2.1.0
 
-geometry = orient(geometry, sign=1.0)
+# Remove unused global geometry variable to avoid confusion
+# geometry = Polygon([(0, 0), (1, 1), (1, 0)])
+# geometry = orient(geometry, sign=1.0)  # Commented out unless needed
 
 from joblib import load
 
-sys.path.append(os.path.abspath("./notebooks"))
-from src.config import DADOS_GEO_MEDIAN, DADOS_LIMPOS, MODELO_FINAL
-
-#from notebooks.src.config import DADOS_GEO_MEDIAN, DADOS_LIMPOS, MODELO_FINAL
-
+sys.path.append(os.path.abspath("notebooks/src"))
+from config import DADOS_GEO_MEDIAN, DADOS_LIMPOS, MODELO_FINAL
 
 @st.cache_data
 def carregar_dados_limpos():
     return pd.read_parquet(DADOS_LIMPOS)
-
 
 @st.cache_data
 def carregar_dados_geo():
@@ -35,10 +34,8 @@ def carregar_dados_geo():
         if not geometry.is_valid:
             geometry = geometry.buffer(0)  # Fix invalid geometry
         # Orient the polygon to be counter-clockwise if it's a Polygon or MultiPolygon
-        if isinstance(
-            geometry, (shapely.geometry.Polygon, shapely.geometry.MultiPolygon)
-        ):
-            geometry = shapely.geometry.polygon.orient(geometry, sign=1.0)
+        if isinstance(geometry, (shapely.geometry.Polygon, shapely.geometry.MultiPolygon)):
+            geometry = orient(geometry, sign=1.0)  # Use shapely.orient directly
         return geometry
 
     # Apply the fix and orientation function to geometries
@@ -60,16 +57,13 @@ def carregar_dados_geo():
 
     return gdf_geo
 
-
 @st.cache_resource
 def carregar_modelo():
     return load(MODELO_FINAL)
 
-
 df = carregar_dados_limpos()
 gdf_geo = carregar_dados_geo()
 modelo = carregar_modelo()
-
 
 st.title("Previsão de preços de imóveis")
 
@@ -78,9 +72,7 @@ condados = sorted(gdf_geo["name"].unique())
 coluna1, coluna2 = st.columns(2)
 
 with coluna1:
-
     with st.form(key="formulario"):
-
         selecionar_condado = st.selectbox("Condado", condados)
 
         longitude = gdf_geo.query("name == @selecionar_condado")["longitude"].values
@@ -91,9 +83,7 @@ with coluna1:
         )
 
         total_rooms = gdf_geo.query("name == @selecionar_condado")["total_rooms"].values
-        total_bedrooms = gdf_geo.query("name == @selecionar_condado")[
-            "total_bedrooms"
-        ].values
+        total_bedrooms = gdf_geo.query("name == @selecionar_condado")["total_bedrooms"].values
         population = gdf_geo.query("name == @selecionar_condado")["population"].values
         households = gdf_geo.query("name == @selecionar_condado")["households"].values
 
@@ -103,22 +93,14 @@ with coluna1:
 
         median_income_scale = median_income / 10
 
-        ocean_proximity = gdf_geo.query("name == @selecionar_condado")[
-            "ocean_proximity"
-        ].values
+        ocean_proximity = gdf_geo.query("name == @selecionar_condado")["ocean_proximity"].values
 
         bins_income = [0, 1.5, 3, 4.5, 6, np.inf]
         median_income_cat = np.digitize(median_income_scale, bins=bins_income)
 
-        rooms_per_household = gdf_geo.query("name == @selecionar_condado")[
-            "rooms_per_household"
-        ].values
-        bedrooms_per_room = gdf_geo.query("name == @selecionar_condado")[
-            "bedrooms_per_room"
-        ].values
-        population_per_household = gdf_geo.query("name == @selecionar_condado")[
-            "population_per_household"
-        ].values
+        rooms_per_household = gdf_geo.query("name == @selecionar_condado")["rooms_per_household"].values
+        bedrooms_per_room = gdf_geo.query("name == @selecionar_condado")["bedrooms_per_room"].values
+        population_per_household = gdf_geo.query("name == @selecionar_condado")["population_per_household"].values
 
         entrada_modelo = {
             "longitude": longitude,
@@ -145,7 +127,6 @@ with coluna1:
         st.metric(label="Preço previsto: (US$)", value=f"{preco[0][0]:.2f}")
 
 with coluna2:
-
     view_state = pdk.ViewState(
         latitude=float(latitude[0]),
         longitude=float(longitude[0]),
@@ -191,7 +172,3 @@ with coluna2:
     )
 
     st.pydeck_chart(mapa)
-
-
-
-
