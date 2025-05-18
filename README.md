@@ -1,102 +1,88 @@
-# Análise estatística de base de dados de diabetes
+# Análise Estatística de Dados de Preços de Moradias na Califórnia
 
-Os dois arquivos IPython Notebook fornecidos abordam o processamento e a análise exploratória de dados (EDA) de um conjunto de dados sobre indicadores de saúde relacionados ao diabetes, proveniente do Sistema de Vigilância de Fatores de Risco Comportamentais (BRFSS) de 2015, disponibilizado no Kaggle. Abaixo, apresento um resumo com os principais resultados e etapas realizadas em cada documento.
+Este projeto aborda a análise exploratória de dados (EDA) e o processamento de um conjunto de dados sobre preços de moradias na Califórnia, derivado do censo dos EUA de 1990. Os dados foram obtidos do Kaggle e estão disponíveis no seguinte link: [California Housing Prices](https://www.kaggle.com/datasets/camnugent/california-housing-prices/data).
 
-## Primeiro Documento: Pré-processamento de Dados
-Este documento foca na preparação inicial do conjunto de dados para análise, incluindo leitura, limpeza, transformação e otimização.
+## Descrição do Conjunto de Dados
 
-1. Descrição do Conjunto de Dados
-* Fonte: Pesquisa BRFSS 2015 (CDC), com dados sobre condições crônicas, comportamentos de risco e uso de serviços preventivos.
-* Tamanho: 70.692 registros e 22 colunas.
-* Variáveis: Incluem indicadores binários (ex.: Diabetes_binary, HighBP), numéricos (ex.: BMI, MentHlth) e categóricos ordenados (ex.: GenHlth, Age).
-2. Pré-processamento
-* Leitura: Dados carregados de um arquivo CSV compactado usando pandas.
-* Renomeação de Colunas: As colunas foram traduzidas para português (ex.: Diabetes_binary → Diabetes, HighBP → PressaoAlta) para facilitar a interpretação.
-* Conversão de Tipos:
-    * Variáveis binárias (0 ou 1) foram convertidas para tipo category.
-    * Variáveis categóricas ordenadas (ex.: SaudeGeral, FaixaIdade) foram transformadas em categorias com rótulos descritivos (ex.: SaudeGeral: 1 = "Excelente", 5 = "Ruim").
-    * Variáveis numéricas (ex.: IMC, DiasProblemasMentais) foram otimizadas para int8 quando inteiros, reduzindo o uso de memória.
-* Otimização: O DataFrame foi salvo em formato parquet, reduzindo o tamanho do arquivo e melhorando a eficiência de leitura.
-3. Estatísticas Descritivas
-* Numéricas:
-    * IMC: Média ≈ 29,86, desvio padrão ≈ 7,11, intervalo de 12 a 98.
-    * DiasProblemasMentais: Média ≈ 3,75, mediana = 0, máximo = 30.
-    * DiasProblemasFisicos: Média ≈ 5,81, mediana = 0, máximo = 30.
-* Categóricas:
-    * Diabetes: 50% "Não" e 50% "Sim" (balanceado).
-    * PressaoAlta: 56,3% "Sim".
-    * SaudeGeral: "Boa" (33,1%) é a categoria mais frequente.
-    * FaixaIdade: "65-69" (15,4%) é a faixa mais comum.
-4. Resultados Principais
-* O conjunto foi limpo e organizado com colunas renomeadas e tipos ajustados, ocupando apenas 1,5 MB após otimização (originalmente 11,9 MB).
-Variáveis numéricas como DiasProblemasMentais e DiasProblemasFisicos têm forte assimetria à direita (mediana = 0, mas com máximos em 30), sugerindo presença de outliers.
+O conjunto de dados contém informações sobre grupos de blocos censitários na Califórnia, a menor unidade geográfica para a qual o Escritório do Censo dos EUA publica dados amostrais (geralmente com populações de 600 a 3.000 pessoas). Cada linha representa um grupo de blocos, e os dados incluem variáveis relacionadas a características demográficas, geográficas e habitacionais.
 
-### Segundo Documento: Análise Exploratória de Dados (EDA)
-Este documento realiza uma análise exploratória inicial, carregando os dados tratados do primeiro documento e examinando variáveis numéricas e categóricas.
+### Detalhes do Conjunto de Dados
+- **Fonte**: Censo dos EUA de 1990.
+- **Unidade**: Grupos de blocos censitários.
+- **Variáveis Principais**:
+  - `median_house_value`: Valor mediano das casas no grupo de blocos (em dólares, variável alvo).
+  - `median_income`: Renda mediana no grupo de blocos (em dezenas de milhares de dólares).
+  - `housing_median_age`: Idade mediana das casas no grupo de blocos.
+  - `total_rooms`: Número total de cômodos no grupo de blocos.
+  - `total_bedrooms`: Número total de quartos no grupo de blocos.
+  - `population`: População do grupo de blocos.
+  - `households`: Número de domicílios no grupo de blocos.
+  - `latitude`: Latitude do grupo de blocos.
+  - `longitude`: Longitude do grupo de blocos.
+  - `ocean_proximity`: Proximidade do oceano (categórica: "NEAR BAY", "<1H OCEAN", "INLAND", "NEAR OCEAN", "ISLAND").
+- **Notas**:
+  - Um domicílio (*household*) é um grupo de pessoas que reside em uma casa.
+  - Variáveis como `total_rooms` e `total_bedrooms` são médias por domicílio, o que pode levar a valores altos em áreas com poucos domicílios e muitas casas vazias (ex.: resorts de férias).
 
-1. Carregamento e Estrutura
-* Dados lidos do arquivo parquet gerado anteriormente.
-* Confirmação da estrutura: 70.692 linhas, 22 colunas, com 19 categóricas e 3 numéricas (IMC, DiasProblemasMentais, DiasProblemasFisicos).
-2. Classificação das Variáveis
-* Numéricas: IMC, DiasProblemasMentais, DiasProblemasFisicos.
-* Categóricas:
-    * Binárias (2 valores): Ex.: PressaoAlta, Fumante, AtividadeFisica (14 no total).
-    * Não Binárias (>2 valores): SaudeGeral, FaixaIdade, Ensino, FaixaRenda.
-    * Alvo: Diabetes (binária: "Sim" ou "Não").
-3. Análise de Correlação (Parcial)
-* Um mapa de calor com coeficientes de Spearman foi gerado para variáveis categóricas, mas o código está incompleto no documento fornecido (falta a definição de resultados_correlacao). Presume-se que o objetivo era explorar associações entre variáveis categóricas e o alvo Diabetes.
-4. Resultados Preliminares
-* A segmentação das variáveis facilita análises futuras (ex.: testes estatísticos para binárias, análises ordinais para não binárias).
-Não há resultados completos de EDA devido à interrupção do código, mas o mapa de calor sugere interesse em correlações como PressaoAlta ou SaudeGeral com Diabetes.
-
-
-![imagem](imagens/diabetes.jpg)
-
-## Organização do projeto
+## Organização do Projeto
 
 ```
 ├── .gitignore         <- Arquivos e diretórios a serem ignorados pelo Git
 ├── ambiente.yml       <- O arquivo de requisitos para reproduzir o ambiente de análise
 ├── LICENSE            <- Licença de código aberto (MIT)
-├── README.md          <- README principal para desenvolvedores que usam este projeto.
+├── README.md          <- README principal para desenvolvedores que usam este projeto
 |
-├── dados              <- Arquivos de dados para o projeto.
+├── dados              <- Arquivos de dados para o projeto
 |
-├── notebooks          <- Jupyter Notebooks.
+├── notebooks          <- Jupyter Notebooks
 │
-|   └──src             <- Código-fonte para uso neste projeto.
+|   └── src            <- Código-fonte para uso neste projeto
 |      │
 |      ├── __init__.py  <- Torna um módulo Python
 |      ├── config.py    <- Configurações básicas do projeto
 |      └── estatistica.py  <- Funções criadas especificamente para este projeto
 |
-├── referencias        <- Dicionários de dados.
+├── referencias        <- Dicionários de dados
 |
 ├── imagens            <- Imagens utilizadas no projeto
 ```
 
-## Configuração do ambiente
+## Configuração do Ambiente
 
-1. Faça o clone do repositório.
+1. Faça o clone do repositório:
 
     ```bash
-    git clone git@github.com:Lgleidson/projeto_ds_diabetes.git
+    git clone git@github.com:Lgleidson/projeto_ds_housing.git
     ```
 
-2. Crie um ambiente virtual para o seu projeto utilizando o `conda`.
+2. Crie um ambiente virtual para o seu projeto utilizando o `conda`:
 
    ```bash
-   conda env create -f ambiente.yml --name estatistica
+   conda env create -f ambiente.yml --name housing_analysis
    ```
 
-## Um pouco mais sobre a base
+## Um Pouco Mais Sobre a Base
 
 [Clique aqui](referencias/01_dicionario_de_dados.md) para ver o dicionário de dados da base utilizada.
 
-## Conclusões Gerais
-1. Pré-processamento: O primeiro documento preparou os dados de forma eficiente, reduzindo o uso de memória e tornando as variáveis mais interpretáveis com nomes em português e categorias descritivas.
-2. EDA Inicial: O segundo documento começou a análise exploratória, destacando a estrutura das variáveis e preparando o terreno para investigações mais profundas, como correlações e testes estatísticos.
-3. Principais Observações:
-    * O conjunto é balanceado em relação a Diabetes (50%/50%), o que é ideal para modelagem preditiva.
-    * Variáveis como IMC e dias de problemas de saúde mostram distribuições assimétricas, indicando a necessidade de tratamento de outliers ou transformações.
-    * A prevalência de condições como pressão alta (56,3%) e colesterol alto (52,6%) sugere fatores de risco comuns associados ao diabetes.
+## Análise Realizada
+
+*Esta seção será preenchida conforme a análise exploratória e o processamento dos dados forem realizados. Por enquanto, o foco está na preparação do ambiente e na familiarização com o conjunto de dados.*
+
+### Possíveis Etapas Futuras
+1. **Pré-processamento**:
+   - Carregar os dados e verificar valores ausentes (ex.: `total_bedrooms` pode ter dados faltantes, conforme comum neste dataset).
+   - Tratar variáveis categóricas como `ocean_proximity` (ex.: codificação one-hot).
+   - Normalizar variáveis numéricas como `median_income` e `total_rooms` para lidar com escalas diferentes.
+2. **Análise Exploratória de Dados (EDA)**:
+   - Examinar distribuições de variáveis como `median_house_value` e `median_income`.
+   - Investigar correlações entre variáveis (ex.: `median_income` vs. `median_house_value`).
+   - Visualizar a distribuição geográfica dos preços usando `latitude` e `longitude`.
+3. **Modelagem**:
+   - Testar modelos preditivos para prever `median_house_value` (ex.: regressão linear, árvores de decisão).
+   - Avaliar o impacto de variáveis como `ocean_proximity` e `median_income` no valor das casas.
+
+## Observações Iniciais
+- A variável alvo `median_house_value` pode ter valores limitados no topo (ex.: capped em $500,000), um artefato comum neste conjunto de dados.
+- Variáveis como `total_rooms` e `total_bedrooms` podem apresentar distribuições assimétricas devido à média por domicílio, exigindo transformações (ex.: log) ou criação de novas variáveis (ex.: cômodos por pessoa).
+- A proximidade do oceano (`ocean_proximity`) provavelmente tem forte influência nos preços das casas, o que pode ser explorado em análises futuras.
